@@ -1,0 +1,438 @@
+{% extends 'home_layout.html' %}
+{% block css %}
+    <style xmlns="http://www.w3.org/1999/html">
+        .article-title {
+            width: 100%;
+            color: #075DB3;
+            font-weight: bold;
+        }
+
+        .article-detail {
+            width: 100%;
+            padding-bottom: 50px;
+        }
+
+        .article-title, .article-detail, .author-profile, .author-photo, .author-profile-detail {
+            float: left;
+        }
+
+        .article-tips, .article-recommend {
+            float: right;
+        }
+
+        .article-tips {
+            width: 100%;
+            text-align: right;
+        }
+
+        .author-profile-detail {
+            margin-left: 10px;
+            width: 100px;
+            height: 50px;
+        }
+
+        .author-profile {
+            margin-top: 20px;
+            width: 30%;
+            height: 100px;
+        }
+
+        .article-recommend {
+            width: 170px;
+            height: 70px;
+        }
+
+        .article-up, .article-down {
+            display: inline-block;
+            height: 70px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .article-up {
+            background-color: #faebcc;
+        }
+
+        .article-down {
+            background-color: #faf2cc;
+        }
+
+        .article-comment-title span {
+            font-weight: bold;
+        }
+
+        .article-comment {
+            margin-top: 50px;
+        }
+
+        .comment-item {
+            padding-bottom: 20px;
+        }
+
+        .comment-body {
+            padding-left: 20px;
+        }
+
+        .reply-title .user-info {
+            float: left;
+        }
+
+        .reply-title .del_comment, .reply-title .reply {
+            float: right;
+        }
+
+        .reply-title .del_comment {
+            margin-right: 30px;
+        }
+
+        .article-comment-area {
+            position: relative;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="article-title">
+        <h2>{{ article.title }}</h2>
+    </div>
+    <div class="article-detail">
+        {{ article.detail|safe }}
+    </div>
+    <div>标签：{% for tag in article.tags.all %}<span class="btn btn-default btn-xs" style="margin-right: 10px;">{{ tag }}</span>{% endfor %}</div>
+    <hr style="border: 3px solid #47aa34">
+    <div class="author-profile clearfix">
+        <div class="author-photo" style="float:left;">
+            <a href="{% url 'home' blog_site=blog.suffix %}"><img style="width: 50px;height: 50px;"
+                                                                  src="/{{ article.blog.user.img }}" alt=""></a>
+        </div>
+        <div class="author-profile-detail">
+            <a href="{% url 'home' blog_site=blog.suffix %}">{{ article.blog.user.nickname }}</a><br>
+            <a href="">关注：{{ article.blog.user.f.count }}</a><br>
+            <a href="">粉丝：{{ article.blog.user.fans.count }}</a>
+        </div>
+    </div>
+    <div class="article-recommend clearfix" style="float: right">
+        <a class="article-up">
+            <div id="up_num"
+                 style="height: 50%;text-align: center;font-size: 16px;padding-top: 10px;">{{ article.up_count }}</div>
+            <i class="fa fa-thumbs-o-up fa-2x" aria-hidden="true"></i>
+            <span id="up">推荐</span>
+        </a>
+        <a class="article-down">
+            <div id="down_num"
+                 style="height: 50%;text-align: center;font-size: 16px;padding-top: 10px;">{{ article.down_count }}</div>
+            <i class="fa fa-thumbs-o-down fa-2x" aria-hidden="true"></i>
+            <span id="down">反对</span>
+        </a>
+    </div>
+    <div class="article-tips">
+        <div class="tips">
+            <span class="ctime">{{ article.create_time }}</span>
+            <a class="author" href="{% url 'home' blog_site=blog.suffix %}">{{ blog.user.nickname }}</a>
+            <span class="comment-count">评论({{ article.comment.count }})</span>
+            <span class="read-count">阅读({{ article.read_count }})</span>
+        </div>
+    </div>
+    <div id="AllanboltSignature">
+    <div style="border-bottom: #e0e0e0 1px dashed; border-left: #e0e0e0 1px dashed; padding: 10px; font-family: 微软雅黑; font-size: 11px; border-top: #e0e0e0 1px dashed; border-right: #e0e0e0 1px dashed; "
+         id="PSignature">
+        <div style="float:left;width:70px;">
+            <img src="/static/plugins/images/o_Warning.png" style="width:65px;height:65px">
+        </div>
+        <div style="float:left;padding-top:10px;">
+
+            <div style="padding: 1px">作者：<a href="{% url 'home' blog_site=blog.suffix %}"
+                                            target="_blank">{{ blog.user.nickname }}</a></div>
+            <div style="padding: 1px">出处：<a href="http://www.cnblogs.com/zhangyafei/" target="_blank">http://www.cnblogs.com/{{ blog.suffix }}/</a>
+            </div>
+            <div style="padding: 1px">本文版权归作者所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文连接</div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <div class="comment">
+    </div>
+    <div class="article-comment">
+        <div class="article-comment-title">
+            <span>评论列表</span>
+            <hr style="border: 1px solid gray">
+        </div>
+        <div class="article-comment-list">
+            {% if comment_list %}
+                {% for comment in comment_list %}
+                    <div class="comment-item" nid="{{ comment.id }}">
+                        <div class="reply-title">
+                            <div class="user-info">
+                                {{ forloop.counter }}楼：
+                                <span>{{ comment.comment_time }}</span>
+                                {% if comment.comment_user.blog %}
+                                    <a href="{% url 'home' blog_site=comment.comment_user.blog.suffix %}"><span>{{ comment.comment_user.nickname }}</span></a>
+                                {% else %}
+                                    <span>{{ comment.comment_user.nickname }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="reply">
+                                <a class="btn btn-success btn-xs" href="#textarea" id="comment-reply-btn"
+                                   data="{{ comment.comment_user.nickname }}"
+                                   cid="{{ comment.id }}"><i class="fa fa-reply"></i> 回复</a>
+                            </div>
+                            {% if request.session.user_info.id == article.blog.user.id %}
+                                <div class="del_comment">
+                                    <a class="btn btn-danger btn-xs" id="comment-del-btn"
+                                       onclick="del_comment({{ comment.id }});"><i class="fa fa-remove"></i> 删除</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <br>
+                        <div class="comment-body">
+                            {% if comment.parent_id %}
+                                {% if comment.parent_id.comment_user.blog %}
+                                    <a href="{% url 'home' blog_site=comment.parent_id.comment_user.blog.suffix %}">@{{ comment.parent_id.comment_user.nickname }}</a>
+                                {% else %}
+                                    <span>@{{ comment.parent_id.comment_user.nickname }}</span>
+                                {% endif %}
+                            {% endif %}
+                            {{ comment.content }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}还没有人对此文章评论
+            {% endif %}
+        </div>
+        <div class="article-comment-pager">
+            <ul class="pagination">
+                {% if page_obj.num_pages > 1 %}
+                    {{ page_str }}
+                {% else %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="article-comment-area" id="textarea">
+            {% if not request.session.user_info %}
+                <div style="text-align:center;line-height:200px;position: absolute;top:0;left:0;right:0;bottom: 0;background-color: rgba(255,255,255,.6)">
+                    您需要登录后才可以回帖 <a href="{% url 'login' %}">登录</a> | <a href="{% url 'register' %}">立即注册</a>
+                </div>
+            {% endif %}
+            <textarea id="textarea" name="content"></textarea>
+            <div id="#" class="reply-comment_id" style="display: none"></div>
+            <div>
+                <div class="reply-btn">
+                    <span><span>21</span>/255字</span>
+                    <a class="btn btn-primary" onclick="submitComment()"><span id="current_user"
+                                                                               style="display: none">{{ request.session.user_info.nickname }} 回复：</span>提 交</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除评论</h4>
+                </div>
+                <div class="modal-body">
+                    <h3>确认删除该条评论？</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm" nid="">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {% load staticfiles %}
+    <script src="{% static 'plugins/imagecrop/layer.js' %}"></script>
+    <script src="/static/plugins/kingeditor/kindeditor-all-min.js"></script>
+    <script src="/static/plugins/kingeditor/lang/zh-CN.js"></script>
+    <script>
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        var editor;
+        KindEditor.ready(function (K) {
+            editor = K.create('textarea[name="content"]', {
+                height: '200px',
+                resizeType: 0, //1可以拖动下边框 2随意拖动
+                allowPreviewEmoticons: true, //表情预览
+                allowImageUpload: true,  //是否允许图片上传
+                items: [
+                    'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+                    'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+                    'insertunorderedlist', '|', 'emoticons', 'image', 'link'],
+                uploadJson: '{% url "comment_images" %}',
+                filePostName: 'images',
+            });
+        });
+        $('#del-confirm').click(function () {
+            var id = $(this).attr('nid');
+            console.log(id);
+            $.ajax({
+                url: '{% url "del_comment" %}',
+                type: 'POST',
+                data: {'id': id},
+                dataType: 'JSON',
+                success: function (arg) {
+                    if (arg.status) {
+                        $('#delModal').modal('hide');
+                        layer.msg('删除成功');
+                        $('.comment-item[nid={0}]'.format(id)).remove();
+                    }
+                    else {
+                        layer.msg(arg.message);
+                    }
+                }
+            })
+        });
+
+        function del_comment(id) {
+            $('#delModal').modal('show');
+            $('#del-confirm').attr('nid', id);
+        }
+
+        function submitComment() {
+            var user = $('#current_user').text();
+            var content = editor.html();
+            console.log(content);
+            var reply_id = $('.reply-comment_id').attr('id');
+            console.log(reply_id);
+            if (reply_id == '#') {
+                $.ajax({
+                    url: '{% url "submitComment" %}',
+                    type: 'GET',
+                    data: {
+                        'article_id':{{article.id}},
+                        'user':{{request.session.user_info.id}},
+                        'content': content
+                    },
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (!arg.status) {
+                            //alert(arg.message);
+                            layer.msg(arg.message);
+                        }
+                        else {
+                            editor.html('');
+                            var $div = $('.article-comment-list');
+                            var $ele = $('<div>');
+                            $ele.text(content);
+                            $div.append(user);
+                            $div.append($ele);
+                        }
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    url: '{% url "submitComment" %}',
+                    type: 'POST',
+                    data: {
+                        'article_id':{{article.id}},
+                        'user':{{request.session.user_info.id}},
+                        'content': content,
+                        'reply_id': reply_id
+                    },
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (!arg.status) {
+                            //alert(arg.message);
+                            layer.msg(arg.message);
+                        }
+                        else {
+                            editor.html('');
+                            var $div = $('.article-comment-list');
+                            var $ele = $('<div>');
+                            $ele.text(content);
+                            $div.append(user);
+                            $div.append($ele);
+                        }
+                    }
+                });
+            }
+        }
+
+        $('.reply-title #comment-reply-btn').bind('click', function () {
+            var data = $(this).attr('data');
+            var cid = $(this).attr('cid');
+            $('.reply-comment_id').attr('id', cid);
+            editor.html('@' + data + ':');
+        })
+        $('.article-up').click(function () {
+            $.ajax({
+                url: '{% url "article_up_or_down" %}',
+                type: 'GET',
+                data: {'article_id':{{article.id}}, 'user_id':{{ request.session.user_info.id }}},
+                dataType: 'JSON',
+                success: function (arg) {
+                    console.log(arg);
+                    if (arg.status == 0) {
+                        layer.msg('感谢点赞');
+                        $('#up').text('已推荐');
+                        $('#up_num').text({{ article.up_count }}+1)
+                    }
+                    else if (arg.status == 1) {
+                        layer.msg(arg.message);
+                    }
+                    else if (arg.status == 2){
+                        $('#up').text('推荐');
+                        $('#up_num').text({{ article.up_count }});
+                        //$('#up_num').text($('#up_num').text()-1);
+                    }
+                    else if(arg.status == 3){
+                        layer.msg(arg.message);
+                    }
+                }
+            })
+        });
+        $('.article-down').click(function () {
+            $.ajax({
+                url: '{% url "article_up_or_down" %}',
+                type: 'POST',
+                data: {'article_id':{{article.id}}, 'user_id':{{ request.session.user_info.id }}},
+                dataType: 'JSON',
+                success: function (arg) {
+                    console.log(arg);
+                    if (arg.status == 0) {
+                        layer.msg('反对成功');
+                        $('#down').html('已反对');
+                        $('#down_num').text({{ article.down_count }}+1)
+                    }
+                    else if (arg.status == 1) {
+                        layer.msg(arg.message);
+                    }
+                    else if (arg.status == 2){
+                        $('#down').text('反对');
+                        $('#down_num').text({{ article.down_count }});
+                    }
+                    else if(arg.status == 3){
+                        layer.msg(arg.message);
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,114 @@
+.article-item {
+    font-size: 13px;
+    border-bottom: 1px dashed #ccc;
+    padding: 5px 0;
+}
+
+.article-item h3 {
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.article-item-summary {
+    margin: 15px auto;
+}
+
+.article-item .item-a {
+    border: 1px solid #d5d5d5;
+    margin-right: 5px;
+}
+
+.article-item a img {
+    width: 70px;
+    height: 70px;
+    padding: 1px;
+}
+
+.footers a {
+    margin-right: 5px;
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    background-color: black;
+}
+
+/*qq在线咨询接口*/
+.qq-serice .a1 {
+    position: fixed;
+    right: 0;
+    top: 200px;
+}
+
+.qq-serice .a2 {
+    position: fixed;
+    right: 10px;
+    top: 356px;
+}
+
+/*腾讯地图*/
+#map-container {
+    width: 550px;
+    height: 400px;
+    margin-left: 25px;
+    border: 1px solid transparent;
+}
+
+/*排行榜动态效果*/
+.font {
+    float: left;
+}
+
+.loading_box {
+    width: 60px;
+    height: 25px;
+    float: right;
+    margin-left: 10px;
+}
+
+.loading_box div {
+    width: 7px;
+    height: 18px;
+    float: left;
+    background-color: gold;
+    border-radius: 10px;
+}
+
+.loading_box div:nth-child(1) {
+    background-color: red;
+    animation: loading 500ms ease 0ms infinite alternate;
+}
+
+.loading_box div:nth-child(2) {
+    background-color: green;
+    animation: loading 500ms ease 100ms infinite alternate;
+}
+
+.loading_box div:nth-child(3) {
+    background-color: pink;
+    animation: loading 500ms ease 200ms infinite alternate;
+
+}
+
+.loading_box div:nth-child(4) {
+    background-color: greenyellow;
+    animation: loading 500ms ease 300ms infinite alternate;
+
+}
+
+.loading_box div:nth-child(5) {
+    background-color: cyan;
+    animation: loading 500ms ease 400ms infinite alternate;
+
+}
+
+@keyframes loading {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(0.5);
+    }
+}

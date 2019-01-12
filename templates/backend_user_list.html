@@ -1,0 +1,338 @@
+{% extends 'backend_loyout.html' %}
+
+{% block title %}后台管理-用户管理{% endblock %}
+{% block css %}
+    <style>
+        .user-manage-title {
+            width: 100%;
+            height: 48px;
+            line-height: 48px;
+            list-style: none;
+        }
+
+        .user-manage-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .pager {
+            float: right;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <ul class="user-manage-title">
+        <li style="color: #2aabd2">用户管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>用户列表</li>
+    </ul>
+    <div class="clearfix"
+         style="height: 36px;line-height: 35px;padding: 0 15px;border-top: 1px solid #dddddd;background-color: #f1f0f0">
+        <i class="fa fa-table" aria-hidden="true"></i>
+        共有({{ user_list.count }}名用户)
+        <a id="addUser" class="right"
+           style="display: inline-block;padding:0 10px;background-color: #428bca;color: #ffffff;cursor: pointer">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            添加用户
+        </a>
+    </div>
+    <div style="padding-left: 20px;">
+        <table id="tb" class="table table-bordered">
+            <thead>
+            <tr>
+                <th class="col-md-2">用户名</th>
+                <th class="col-md-2">昵称</th>
+                <th class="col-md-2">密码</th>
+                <th class="col-md-2">邮箱</th>
+                {#                <th class="col-md-2">头像</th>#}
+                <th class="col-md-2">创建时间</th>
+                <th class="col-md-2">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in user_list %}
+                <tr nid="{{ row.id }}">
+                    <td id="row-username">{{ row.username }}</td>
+                    <td id="row-nickname">{{ row.nickname }}</td>
+                    <td id="row-pwd">{{ row.pwd }}</td>
+                    <td id="row-email">{{ row.email }}</td>
+                    {#                    <td>{{ row.img }}</td>#}
+                    <td>{{ row.create_time }}</td>
+                    <td>
+                        <a nid="{{ row.id }}" id="del-btn" name="{{ row.username }}" class="btn btn-danger btn-xs">
+                            <i class="fa fa-times"></i>删除
+                        </a>
+                        |
+                        <a class="btn btn-primary btn-xs" id="edit-user"
+                           nid="{{ row.id }}" username="{{ row.username }}" nickname="{{ row.nickname }}" pwd="{{ row.pwd }}" email="{{ row.email }}">
+                            <i class="fa fa-pencil-square-o"></i> 编辑
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="pager">
+        <ul class="pagination">
+            {{ page_str }}
+        </ul>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除用户</h4>
+                </div>
+                <div class="modal-body">
+                    确认删除用户 &nbsp;<span style="font-size: 24px;" id="del-class-name" nid=""></span>？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">添加用户</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="add-fm">
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">用户名</label>
+                            <input type="text" class="form-control" name="username" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">昵称</label>
+                            <input type="text" class="form-control" name="nickname" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">密码</label>
+                            <input type="text" class="form-control" name="pwd" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">邮箱</label>
+                            <input type="email" class="form-control" name="email" value="">
+                        </div>
+                        <div class="form-group">
+                            <label id="error_msg" class="hide" style="color: red;"></label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="add-confirm">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">编辑用户</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-fm">
+                        <div class="form-group" style="display: none">
+                            <label for="recipient-name" class="control-label">用户id</label>
+                            <input type="text" class="form-control" id="user_id" name="id" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">昵称</label>
+                            <input type="text" class="form-control" id="nickname" name="nickname" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">密码</label>
+                            <input type="text" class="form-control" id="pwd" name="pwd" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" value="">
+                        </div>
+                        <div class="form-group">
+                            <label id="error_msg" class="hide" style="color: red;"></label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="edit-confirm">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindDel();
+            bindDelConfirm();
+            bindAdd();
+            bindAddConfirm();
+            bindEdit();
+            bindEditConfirm();
+        });
+        function bindEditConfirm() {
+           $('#edit-confirm').click(function () {
+                $.ajax({
+                    url: '{% url "backend:edit_user" %}',
+                    type: 'POST',
+                    data: $('#edit-fm').serialize(),
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (arg.status) {
+                            var form = arg.message;
+                            var id = $('#user_id').val();
+                            $('tr[nid="' + id + '"]').find('#row-username').text(form.username);
+                            $('tr[nid="' + id + '"]').find('#row-nickname').text(form.nickname);
+                            $('tr[nid="' + id + '"]').find('#row-pwd').text(form.pwd);
+                            $('tr[nid="' + id + '"]').find('#row-email').text(form.email);
+                            $('#editModal').modal('hide');
+                            //window.location.reload();
+                        }
+                        else {
+                            var $msg = arg.message;
+                            if ($msg['username']) {
+                                console.log($msg['username']);
+                                $('#error_msg').text($msg['username'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['nickname']) {
+                                console.log($msg['nickname']);
+                                $('#error_msg').text($msg['nickname'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['pwd']) {
+                                console.log($msg['pwd']);
+                                $('#error_msg').text($msg['pwd'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['email']) {
+                                console.log($msg['email']);
+                                $('#error_msg').text($msg['email'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['__all__']) {
+                                $('#error_msg').text($msg['__all__'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                        }
+                    }
+                })
+            })
+        }
+
+        function bindEdit() {
+            $('#tb').on('click','#edit-user',function () {
+                $('#user_id').val($(this).attr('nid'));
+                $('#username').val($(this).attr('username'));
+                $('#nickname').val($(this).attr('nickname'));
+                $('#pwd').val($(this).attr('pwd'));
+                $('#email').val($(this).attr('email'));
+                $('#editModal').modal('show');
+            });
+        }
+
+        function bindDel() {
+            $('#tb').on('click', '#del-btn', function () {
+                var name = $(this).attr('name');
+                var id = $(this).attr('nid');
+                $('#del-class-name').text(name);
+                $('#del-class-name').attr('nid', id);
+                $('#delModal').modal('show');
+            });
+        }
+
+        function bindDelConfirm() {
+            $('#del-confirm').click(function () {
+                var id = $('#del-class-name').attr('nid');
+                $.ajax({
+                    url: '{% url "backend:del_user" %}',
+                    type: 'GET',
+                    data: {'id': id},
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        if (arg) {
+                            $('tr[nid="' + id + '"]').remove();
+                            $('#delModal').modal('hide');
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+
+        function bindAdd() {
+            $('#addUser').click(function () {
+                $('#addModal').modal('show');
+            })
+        }
+
+        function bindAddConfirm() {
+            $('#add-confirm').click(function () {
+                $.ajax({
+                    url: '{% url "backend:add_user" %}',
+                    type: 'POST',
+                    data: $('#add-fm').serialize(),
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (arg.status) {
+                            $('#addModal').modal('hide');
+                            window.location.reload();
+                        }
+                        else {
+                            var $msg = arg.message;
+                            if ($msg['username']) {
+                                console.log($msg['username']);
+                                $('#error_msg').text($msg['username'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['nickname']) {
+                                console.log($msg['nickname']);
+                                $('#error_msg').text($msg['nickname'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['pwd']) {
+                                console.log($msg['pwd']);
+                                $('#error_msg').text($msg['pwd'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['email']) {
+                                console.log($msg['email']);
+                                $('#error_msg').text($msg['email'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                            else if ($msg['__all__']) {
+                                $('#error_msg').text($msg['__all__'][0]);
+                                $('#error_msg').removeClass('hide');
+                            }
+                        }
+                    }
+                })
+            })
+        }
+
+    </script>
+{% endblock %}

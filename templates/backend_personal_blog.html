@@ -1,0 +1,93 @@
+{% extends 'backend_loyout.html' %}
+
+{% block css %}
+    <style>
+        .personal-title {
+            width: 100%;
+            height: 48px;
+            list-style: none;
+            line-height: 48px;
+        }
+
+        .personal-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .personal {
+            width: 80%;
+            margin: 0 auto;
+            padding: 50px;
+        }
+        .form-control{
+            width: 500px;
+            float: right;
+        }
+        .fm {
+            width: 60%;
+            margin: 10px auto;
+        }
+        .form-group{
+            float: left;
+        }
+        .submit-row{
+            float: right;
+        }
+        .blog-manage .item-content{
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <ul class="personal-title">
+        <li style="color: #2aabd2">个人管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>博客管理</li>
+    </ul>
+    <div class="personal">
+        <form class="fm" method="post" action="{% url 'backend:personal_update_pwd' %}" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">个人博客站点前缀</label>
+                <input type="text" class="form-control" name="suffix" value="{{ blog.suffix }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="theme">主题</label>
+                <select name="theme" readonly>
+                    <option readonly>{{ blog.theme }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="title">博客标题</label>
+                <input type="text" class="form-control" name="title" value="{{ blog.title }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="pwd">博客简介</label>
+                <textarea rows="3" class="form-control" name="summary" readonly>{{ blog.summary }}</textarea>
+             </div>
+            <div class="submit-row">
+                <a class="btn btn-primary" href="{% url 'backend:personal_update_blog' %}">
+                    {% if blog %}去修改
+                    {% else %}开通博客
+                    {% endif %}
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+{#        <script>#}
+{#            $('.submit-btn').click(function () {#}
+{#                $.ajax({#}
+{#                    url:'{% url "backend:personal_update" %}',#}
+{#                    type:'POST',#}
+{#                    data:$('.fm').serialize(),#}
+{#                    dataType:'JSON',#}
+{#                    success:function (arg) {#}
+{#                        console.log(arg);#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        </script>#}
+{% endblock %}

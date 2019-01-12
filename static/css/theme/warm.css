@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 20px;
+    min-height: 101%;
+    background: url("/static/css/theme/bg_body.gif") left top;
+}
+
+.pg-header {
+    background: url("/static/css/theme/coffee.gif") right top no-repeat;
+    height: 178px;
+}
+
+.title {
+    background: url("/static/css/theme/bg_title.gif") 170px 40px no-repeat;
+    height: 210px;
+    clear: both;
+}
+
+.title a {
+    color: #935A32;
+    font-weight: bold;
+    margin-left: 2em;
+    font-family: "黑体", "ms song", "宋体", "Arial", "verdana", "Helvetica", "sans-serif";
+}
+
+.summary {
+    display: inline-block;
+    margin-top: 50px;
+    margin-left: 65px;
+    font-size: 16px;
+    color: #935A32;
+}
+
+.menu-list {
+    width: 90%;
+    height: 40px;
+    margin: auto;
+    margin-left: 40px;
+}
+.summary-list .filter-value{
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    padding-bottom: 30px;
+    padding-right: 10px;
+}
+.menu-list .menu-item {
+    padding-right: 20px;
+}
+
+.pg-body {
+    width: 100%;
+}
+
+.pg-menu {
+    float: right;
+    width: 20%;
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 12px;
+}
+.pg-menu>div{
+    margin-top: 20px;
+}
+.notice-body ul{
+    padding-left: 0;
+    list-style: none;
+}
+.pg-content {
+    width: 80%;
+    margin: auto auto 20px auto;
+    float: left;
+    background: #FEFEF2 url("/static/css/theme/bg_left.gif") left top repeat-x;
+    padding-top: 70px;
+    padding-right: 40px;
+    padding-left: 40px;
+    padding-bottom: 100px;
+}
+.summary-list .summary-item {
+    margin-bottom: 30px;
+    line-height: 2;
+}
+
+.summary-item .summary-title {
+    font-weight: bold;
+    font-size: 15px;
+    width: 100%;
+    line-height: 1.5;
+
+}
+
+.summary-item .summary-title a {
+    color: black;
+}
+
+.summary-item .summary-title a:hover,.menu-item:hover {
+    color: #AA7A53;
+}
+
+.summary-footer {
+    float: right;
+}

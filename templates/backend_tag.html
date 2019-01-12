@@ -1,0 +1,225 @@
+{% extends 'backend_loyout.html' %}
+{% block title %}标签管理{% endblock %}
+{% block css %}
+    <style>
+        .article-classification-title {
+            width: 100%;
+            height: 48px;
+            {#background-color: #dddddd;#}
+            list-style: none;
+            line-height: 48px;
+        }
+
+        .article-classification-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .classification-body {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <ul class="article-classification-title">
+        <li style="color: #2aabd2">标签管理</li>
+        <li><i class="fa fa-arrow-right"></i>标签列表</li>
+    </ul>
+    <div class="classification-body">
+        <div class="row">
+            <form id="fm" class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <p style="margin: 2px 20px 0px;font-weight: bold">标签名称：&nbsp;&nbsp;<input type="text"
+                                                                                              name="class_name"
+                                                                                              class="form-control"
+                                                                                              placeholder="请输入标签名称"></p>
+                </div>
+                <a id="submit" class="btn btn-primary">添加</a>
+            </form>
+        </div>
+    </div>
+
+    <div style="height: 35px;background-color: #f5f5f5;line-height: 35px;padding: 0 15px;">
+        <i class="fa fa-table" aria-hidden="true"></i>
+        标签列表
+    </div>
+    <div style="padding-left: 20px;padding-top: 20px;">
+        <table class="table table-bordered">
+            <thread>
+                <tr>
+                    <th>标签</th>
+                    <th>文章个数</th>
+                    <th>操作</th>
+                </tr>
+            </thread>
+            <tbody id="tb">
+            {% for row in tags %}
+                <tr nid="{{ row.id }}">
+                    <td id="title">{{ row.title }}</td>
+                    <td>{{ row.article_set.count }}</td>
+                    <td>
+                        <a id="del-btn" class="btn btn-danger btn-xs" nid="{{ row.id }}">
+                            {#                            <a class="btn btn-danger btn-xs" href="{% url 'backend:del_classification' %}?id={{ row.id }}">#}
+                            <i class="fa fa-times"></i>删除
+                        </a>
+                        |
+                        <a id="edit-btn" nid="{{ row.id }}" class="btn btn-primary btn-xs"><i
+                                class="fa fa-pencil-square-o"></i>编辑
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">编辑标签</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-fm">
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">标签名称</label>
+                            <input type="text" class="form-control" id="edit-class-name" value="" nid="">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="editSave">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除标签</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">标签名称</label>
+                            <input type="text" class="form-control" id="del-class-name" value="" nid="" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindAdd();
+            bindDel();
+            bindEdit();
+            bindDelConfirm();
+            bindEditSave();
+        });
+        function bindEditSave() {
+            $('#editSave').click(function () {
+                var name = $('#edit-class-name').val();
+                var id = $('#edit-class-name').attr('nid');
+                console.log(name,id);
+                $.ajax({
+                    url:'/backend/edit_tag',
+                    type:'POST',
+                    data:{'id':id,'name':name},
+                    dataType:'JSON',
+                    success:function (arg) {
+                        console.log(arg);
+                        if (arg.status){
+                            $('#editModal').modal('hide');
+                            window.location.reload();
+                        }
+                        else{
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+        function bindDelConfirm() {
+            $('#del-confirm').click(function () {
+                var id = $('#del-class-name').attr('nid');
+                console.log(id);
+                $.ajax({
+                    url: '/backend/del_tag',
+                    type: 'GET',
+                    data: {'id': id},
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (arg.status) {
+                            console.log($(this));
+                            $('tr[nid="'+id+'"]').remove();
+                            $('#delModal').modal('hide');
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+
+
+        function bindDel() {
+            $('#tb').on('click', '#del-btn', function () {
+                $('#delModal').modal('show');
+                var name = $(this).parent().parent().children('#title').text();
+                var id = $(this).attr('nid');
+                console.log(name, id);
+                $('#del-class-name').attr('nid', id);
+                $('#del-class-name').val(name);
+            })
+        }
+
+        function bindEdit() {
+            $('#tb').on('click', '#edit-btn', function () {
+                $('#editModal').modal('show');
+                var name = $(this).parent().parent().children('#title').text();
+                var id = $(this).attr('nid');
+                console.log(name, id);
+                $('#edit-class-name').val(name);
+                $('#edit-class-name').attr('nid',id);
+            })
+        }
+
+        function bindAdd() {
+            $('#submit').click(function () {
+                $.ajax({
+                    url: '{% url "backend:add_tag" %}',
+                    type: 'POST',
+                    data: $('#fm').serialize(),
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (arg.status) {
+                            window.location.reload();
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}extends 'backend_classification.html' %}

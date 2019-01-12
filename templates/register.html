@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/index-article.css">
+    <link rel="stylesheet" href="/static/css/account.css">
+    <script src="/static/js/jquery-3.1.1.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="login">
+        <div style="font-size: 25px;font-weight: bold;text-align: center">用户注册</div>
+        <form id="fm" action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">用户名 <span style="color: gray;margin-left: 200px;font-size: 12px;">(2-16位)</span></label>
+                <input type="text" class="form-control" placeholder="请输入用户名" name="username">
+            </div>
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" class="form-control" placeholder="请输入邮箱" name="email">
+            </div>
+            <div class="form-group">
+                <label for="pwd">密码<span style="color: gray;margin-left: 70px;font-size: 12px;">(8-16位,必须包含字母、数字和特殊字符)</span></label>
+                <input type="password" class="form-control" placeholder="请输入密码" name="pwd">
+            </div>
+            <div class="form-group">
+                <label for="pwd">确认密码</label>
+                <input type="password" class="form-control" placeholder="请再次输入密码" name="pwd2">
+             </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <input type="text" class="form-control" name="check_code">
+                </div>
+                <div class="col-xs-6">
+                    <img src="{% url "get_check_code" %}" onclick="changImg(this);">
+                </div>
+            </div>
+            <div class="form-group">
+{#                <span id="error_msg" class="hide"></span>#}
+                <label id="error_msg" class="hide" for="pwd" style="color: red;"></label>
+             </div>
+         <input id="submit" class="btn btn-success" value="下一步"/>
+            <div class="row" style="margin-top: 20px;">
+                    <div class="col-xs-9">
+                        <span style="color: red">已有账号？</span>
+                    </div>
+                    <div class="col-xs-3">
+                        <a href="{% url 'login' %}">立即登录</a>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        bindRegister();
+    });
+    function changImg(self) {
+        self.src = self.src + '?';
+    }
+    function bindRegister() {
+        $('#submit').click(function () {
+            $('#error_msg').addClass('hide');
+            $.ajax({
+                url:'{% url "register" %}',
+                type:'POST',
+                data:$('#fm').serialize(),
+                dataType:'JSON',
+                success:function (arg) {
+                    console.log(arg);
+                    if(arg.status){
+                        window.location.href = '{% url "login" %}';
+                    }
+                    else{
+                        var $msg = arg.errors;
+                        console.log($msg);
+                        if ($msg['username']){
+                            console.log($msg['username']);
+                            $('#error_msg').text($msg['username'][0]);
+                            $('#error_msg').removeClass('hide');
+                        }
+                        else if ($msg['email']){
+                            console.log($msg['email']);
+                            $('#error_msg').text($msg['email'][0]);
+                            $('#error_msg').removeClass('hide');
+                        }
+                        else if($msg['pwd']){
+                            console.log($msg['pwd']);
+                            $('#error_msg').text($msg['pwd'][0]);
+                            $('#error_msg').removeClass('hide');
+                        }
+                        else if ($msg['__all__']){
+                            $('#error_msg').text($msg['__all__'][0]);
+                            $('#error_msg').removeClass('hide');
+                        }
+                        else if ($msg['check_code']){
+                            $('#error_msg').text($msg['check_code'][0]);
+                            $('#error_msg').removeClass('hide');
+                        }
+                    }
+                }
+            })
+        })
+    }
+</script>
+</body>
+</html>

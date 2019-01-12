@@ -1,0 +1,53 @@
+<nav class="navbar navbar-inverse navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="font-size: 20px;" href="/">老子的技术论坛</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% if not article_type_id %}
+                    <li class="active"><a href="/">全部</a></li>
+                {% else %}
+                    <li><a href="/">全部</a></li>
+                {% endif %}
+                {% for item in article_type_list %}
+                    {% if article_type_id == item.0 %}
+                        <li class="active"><a href="/all/{{ item.0 }}.html">{{ item.1 }}</a></li>
+                    {% else %}
+                        <li><a href="/all/{{ item.0 }}.html">{{ item.1 }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.session.user_info %}
+                    <li>
+                        <a href="{% url 'backend:backend_index' %}">{{ request.session.user_info.nickname }}</a>
+                    </li>
+                    {% if request.session.user_info.blog__suffix %}
+                    <li>
+                        <a href="{% url 'home' blog_site=request.session.user_info.blog__suffix %}">我的博客</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'backend:backend_index' %}">管理</a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'logout' %}">注销</a>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">登录</a></li>
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

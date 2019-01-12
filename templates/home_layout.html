@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ blog.user.nickname }}</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="/static/css/theme/{{ blog.theme }}.css">
+    {% block css %}{% endblock %}
+    <script src="/static/js/jquery-3.1.1.js"></script>
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="/static/plugins/calendar/calendar.js"></script>
+</head>
+<body>
+<div class="pg-header">
+    <div class="title">
+        <h1><a href="{% url 'home' blog_site=blog.suffix %}">{{ blog.title }}</a></h1>
+        <span class="summary">{{ blog.summary }}</span>
+    </div>
+    <div class="menu-list">
+        <a class="menu-item" href="/">首页</a>
+        <a class="menu-item" href="{% url 'home' blog_site=blog.suffix %}">个人首页</a>
+        <a class="menu-item" href="{% url 'backend:backend_index' %}">管理</a>
+    </div>
+</div>
+<div class="pg-body">
+    <div class="pg-menu">
+        <div class="notice">
+            <div class="notice-body">
+                <ul>
+                    <li>昵称：{{ blog.user.nickname }}</li>
+                    <li>粉丝：{{ blog.user.fans.count }}</li>
+                    <li>关注：{{ blog.user.f.count }}</li>
+                    <li>邮箱：{{ blog.user.email }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="calendar" id="calendar"></div>
+        <div class="tags">
+            <div class="tags-header">我的标签</div>
+            <div class="tags-body">
+                <ul>
+                    {% for tag in tag_list %}
+                        <li>
+                            <a href="{% url 'filter' blog.suffix 'tag' tag.id %}">{{ tag.title }}({{ tag.article_set.count }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="types">
+            <div class="types-header">文章分类</div>
+            <div class="types-body">
+                <ul>
+                    {% for type in classification_list %}
+                        <li>
+                            <a href="{% url 'filter' blog.suffix 'types' type.id %}">{{ type.title }}({{ type.classification.count }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="dates">
+            <div class="dates-header">时间</div>
+            <div class="dates-body">
+                <ul>
+                    {% for date in date_list %}
+                        <li>
+                            <a href="{% url 'filter' blog.suffix 'date' date.ctime %}">{{ date.ctime }}({{ date.num }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="pg-content">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+{% block js %}
+    <script>new calendar('calendar')</script>
+{% endblock %}
+</body>
+</html>

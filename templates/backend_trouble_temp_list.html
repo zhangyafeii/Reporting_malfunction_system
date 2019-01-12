@@ -1,0 +1,206 @@
+{% extends 'backend_loyout.html' %}
+
+{% block title %}后台管理-报障单模板管理{% endblock %}
+{% block css %}
+    <style>
+        .article-manage-title {
+            width: 100%;
+            height: 48px;
+        {#background-color: #dddddd;#} line-height: 48px;
+            list-style: none;
+        }
+
+        .article-manage-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .article-manage-search {
+            border: 1px dashed #dddddd;
+            padding: 8px;
+            border-left: 3px solid #337ab7;
+        }
+
+        .condition {
+            padding: 20px 50px;
+        }
+
+        .condition a {
+            display: inline-block;
+            padding: 5px 8px;
+            border: 1px solid #dddddd;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .condition a.active {
+            background-color: coral;
+            color: white;
+        }
+
+        .pager {
+            float: right;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <ul class="article-manage-title">
+        <li style="color: #2aabd2">报障管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>障单列表</li>
+    </ul>
+        <div class="clearfix"
+             style="height: 36px;line-height: 35px;padding: 0 15px;border-top: 1px solid #dddddd;background-color: #f1f0f0">
+            <i class="fa fa-table" aria-hidden="true"></i>
+            我的报障单模板({{ temp.count }}单)
+            <a target="_blank" href="{% url 'backend:trouble_temp_create' %}" class="right"
+               style="display: inline-block;padding:0 10px;background-color: #428bca;color: #ffffff;">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                创建模板
+            </a>
+        </div>
+        <div style="padding-left: 20px;">
+            <table id="tb" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="col-md-4">模板标题</th>
+                    <th class="col-md-2">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in temp %}
+                    <tr nid="{{ row.id }}">
+                        <td><a id="detail-btn" d="{{ row.context }}" ntitle="{{ row.title }}">{{ row.title }}</a></td>
+                        <td>
+                            <a nid="{{ row.id }}" id="del-btn" ntitle="{{ row.title }}" class="btn btn-danger btn-xs">
+                                <i class="fa fa-times"></i> 删除
+                            </a>
+                            |
+                            <a class="btn btn-primary btn-xs" href="{% url 'backend:trouble_temp_edit' row.id %}">
+                                <i class="fa fa-pencil-square-o"></i> 编辑
+                            </a>
+                            |
+                            <a id="detail-btn" d="{{ row.context }}" ntitle="{{ row.title }}" class="btn btn-success btn-xs">
+                                <i class="fa fa-pencil-square-o"></i> 查看
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pager">
+        <ul class="pagination">
+            {{ page_str }}
+        </ul>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除报障单</h4>
+                </div>
+                <div class="modal-body">
+{#                    确认删除分类: <span id="del-class-name" nid=""></span>？#}
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">模板标题</label>
+                            <input type="text" class="form-control" id="del-class-name" value="" nid="" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">模板详情</h4>
+                </div>
+                <div class="modal-body">
+{#                    确认删除分类: <span id="del-class-name" nid=""></span>？#}
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">标题</label>
+                            <input type="text" class="form-control" id="title-class-name" value="" nid="" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">内容</label>
+                            <textarea class="form-control" rows="3" id="content-class-name" value="" readonly></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindDel();
+            bindDelConfirm();
+            bindDetail();
+        });
+
+        function bindDetail() {
+            $('#tb').on('click','#detail-btn',function () {
+                var title = $(this).attr('ntitle');
+                var content = $(this).attr('d');
+                $('#detailModal').modal('show');
+                $('#title-class-name').val(title);
+                $('#content-class-name').val(content);
+            })
+        }
+        function bindDelConfirm() {
+            $('#del-confirm').click(function () {
+                var id = $('#del-class-name').attr('nid');
+                //console.log(id);
+                $.ajax({
+                    url: '{% url "backend:trouble_temp_del" %}',
+                    type: 'GET',
+                    data: {'id': id},
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        //console.log(arg);
+                        if (arg.status) {
+                            //console.log($(this));
+                            $('tr[nid="' + id + '"]').remove();
+                            $('#delModal').modal('hide');
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+
+
+        function bindDel() {
+            $('#tb').on('click', '#del-btn', function () {
+                $('#delModal').modal('show');
+                var name = $(this).attr('ntitle');
+                var id = $(this).attr('nid');
+                //console.log(name, id);
+                $('#del-class-name').attr('nid', id);
+                $('#del-class-name').val(name);
+                //$('#del-class-name').text(name);
+            })
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,139 @@
+body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.hide {
+    display: none;
+}
+
+.pg-header {
+    height: 48px;
+    background-color: #2f72ab;
+    min-width: 1100px;
+    line-height: 48px;
+}
+
+.pg-header .logo {
+    color: white;
+    font-size: 24px;
+    background-color: #1c5a9c;
+    width: 200px;
+    text-align: center;
+}
+
+.pg-header .header-right-menu {
+    margin-right: 50px;
+}
+
+.pg-header .header-left-menu .item, .pg-header .header-right-menu .item {
+    color: white;
+    padding: 0 10px;
+    height: 48px;
+    display: inline-block;
+}
+
+.pg-header .header-left-menu .item:hover {
+    background-color: #1c5a9c;
+}
+
+.pg-header .header-right-menu .item:hover {
+    background-color: #1c5a9c;
+}
+
+.avatar {
+    height: 120px;
+    position: relative;
+    display: inline-block;
+}
+
+.avatar img {
+    margin-bottom: 5px;
+    border-radius: 50%;
+}
+
+.userinfo-menu {
+    position: absolute;
+    top: 48px;
+    right: 10px;
+    width: 100px;
+    height: 60px;
+    border: 1px solid #dddddd;
+    display: none;
+}
+
+.userinfo-menu a {
+    color: #2aabd2 !important;
+    display: block;
+    line-height: 30px;
+}
+
+.pg-body .menus {
+    width: 200px;
+    height: 610px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 48px;
+    color: blue;
+    background-color: #dddddd;
+    text-align: center;
+}
+
+.pg-body .menus .item-title:hover {
+    border-right: 3px solid #2aabd2;
+}
+
+.pg-body .contents {
+    position: absolute;
+    left: 200px;
+    right: 0;
+    bottom: 0;
+    top: 48px;
+    height: 610px;
+    overflow: scroll;
+}
+
+.menus .item {
+    cursor: pointer;
+}
+
+.menus .item .item-title {
+    padding: 8px;
+    border-right: 3px solid transparent;
+    font-size: 14px;
+}
+
+.item-content {
+    display: none;
+    width: 100%;
+    text-align: left;
+}
+
+.item-content div {
+    height: 35px;
+    line-height: 35px;
+    margin-left: 75px;
+    border-right: 3px solid transparent;
+}
+
+.pg-body .menus .item-content div:hover {
+    border-right: 3px solid #2aabd2;
+}
+
+.menus .item .item-title i {
+    margin-right: 8px;
+}
+
+.header-right-menu i {
+    margin-right: 5px;
+}

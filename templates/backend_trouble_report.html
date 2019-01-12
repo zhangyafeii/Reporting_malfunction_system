@@ -1,0 +1,126 @@
+{% extends 'backend_loyout.html' %}
+
+{% block title %}统计信息{% endblock %}
+{% block css %}
+    <style>
+        .data-statistics{
+            width: 100%;
+            min-height: 600px;
+            overflow: scroll;
+        }
+    #Month-performance{
+        {#width: 600px;#}
+        {#height: 300px;#}
+        float: left;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="data-statistics">
+        <div id="Month-performance"></div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/js/jquery-3.1.1.js"></script>
+    <script src="/static/plugins/Highcharts-6.1.2/code/highcharts.js"></script>
+<script>
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+    $(function(){
+    
+        initChart();
+    
+    });
+    
+    function initChart(){
+        var config = {
+            chart: {
+                //plotBackgroundColor:'black',
+                type: 'spline',
+                backgroundColor:'#fff',
+                style:{
+                     fontFamily: "",
+                     fontSize: '12px',
+                     fontWeight: 'bold',
+                     color: '#000000'
+                }
+            },
+            title: {
+                text: '员工月份绩效'
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+                title: {
+                    text: '接单数量'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [
+                {
+                    name: 'A',
+                    data: [
+                        [1491535949788.035, 7.0],
+                        [1491535949888.035, 6.0],
+                        [1491535949988.035, 10.0],
+                        [1491535950088.035, 1.0],
+                    ]
+                },
+                {
+                    name: 'B',
+                    data: [
+                        [1491535949788.035, 8.0],
+                        [1491535949888.035, 2.0],
+                        [1491535949988.035, 40.0],
+                        [1491535950088.035, 1.0],
+                    ]
+                }
+                ,
+                {
+                    name: 'C',
+                    data: [
+                        [1491535949788.035, 10.0],
+                        [1491535949888.035, 2.0],
+                        [1491535949988.035, 10.0],
+                        [1491535950088.035, 8.0],
+                    ]
+                }
+                
+            ]
+        };
+        // 数据库中获取 series
+        //$('#container').highcharts(config);
+        $.ajax({
+            url: '/backend/trouble-json-report',
+            dataType: 'json',
+            success:function(arg){
+                config['series'] = arg;
+                $('#Month-performance').highcharts(config);
+            }
+        })
+
+    }
+
+</script>
+{% endblock %}

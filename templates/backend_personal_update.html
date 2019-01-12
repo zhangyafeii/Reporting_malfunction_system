@@ -1,0 +1,99 @@
+{% extends 'backend_loyout.html' %}
+
+{% block css %}
+    <style>
+        .personal-title {
+            width: 100%;
+            height: 48px;
+            list-style: none;
+            line-height: 48px;
+        }
+
+        .personal-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .personal {
+            width: 80%;
+            margin: 0 auto;
+            padding: 50px;
+        }
+
+        .personal-photo {
+            float: left;
+            width: 260px;
+        }
+
+        .fm {
+            float: right;
+            width: 60%;
+            margin: 10px;
+        }
+        .submit-btn{
+            margin-top: 30px;
+            float: right;
+        }
+        .personal-manage .item-content{
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <ul class="personal-title">
+        <li style="color: #2aabd2">个人管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>个人资料</li>
+    </ul>
+    <div class="personal">
+        <div class="personal-photo">
+            <div style="text-align: center;margin-bottom: 10px;border: 3px solid gray;background:url('/static/images/default.png') repeat">
+                <img src="/{{ user.img }}" alt="" width="250px" height="250px;">
+            </div>
+            <button style="margin-left: 80px;" class="btn btn-success" onclick="upload_image_layer();">修改头像</button>
+        </div>
+        <form class="fm" method="post" action="{% url 'backend:personal_update' %}" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label>用户名<span>{{ form.username.errors.0 }}</span</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label>昵称<span>{{ form.nickname.errors.0 }}</span</label>
+                {{ form.nickname }}
+            </div>
+            <div class="form-group">
+                <label>eamil<span>{{ form.email.errors.0 }}</span</label>
+                {{ form.email }}
+            </div>
+            <input type="submit" class="btn btn-primary submit-btn" value="提交">
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/plugins/imagecrop/layer.js"></script>
+        <script>
+            function upload_image_layer() {
+                layer.open({
+                    //content:"<p>hello world</p>",
+                    title: "上传头像",
+                    area: ['650px', '600px'],
+                    type: 2,
+                    content: "{% url 'backend:my_image' %}",
+                });
+            }
+            {#$('.submit-btn').click(function () {#}
+            {#    $.ajax({#}
+            {#        url:'{% url "backend:personal_update" %}',#}
+            {#        type:'POST',#}
+            {#        data:$('.fm').serialize(),#}
+            {#        dataType:'JSON',#}
+            {#        success:function (arg) {#}
+            {#            console.log(arg);#}
+            {#        }#}
+            {#    })#}
+            {#})#}
+        </script>
+{% endblock %}

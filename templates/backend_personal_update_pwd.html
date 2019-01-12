@@ -1,0 +1,82 @@
+{% extends 'backend_loyout.html' %}
+
+{% block css %}
+    <style>
+        .personal-title {
+            width: 100%;
+            height: 48px;
+            list-style: none;
+            line-height: 48px;
+        }
+
+        .personal-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .personal {
+            width: 80%;
+            margin: 0 auto;
+            padding: 50px;
+        }
+        .form-control{
+            width: 500px;
+            float: right;
+        }
+        .fm {
+            width: 60%;
+            margin: 10px auto;
+        }
+        .form-group{
+            float: left;
+        }
+        .submit-btn{
+            margin-top: 30px;
+            float: right;
+        }
+        .personal-manage .item-content{
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <ul class="personal-title">
+        <li style="color: #2aabd2">个人管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>修改密码</li>
+    </ul>
+    <div class="personal">
+        <form class="fm" method="post" action="{% url 'backend:personal_update_pwd' %}" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label>原密码<span style="color: red;margin-left: 30px;">{{ form.pwd.errors.0 }}</span</label>
+                {{ form.pwd }}
+            </div>
+            <div class="form-group">
+                <label>新密码<span style="color: red;margin-left: 30px;">{{ form.pwd1.errors.0 }}</span</label>
+                {{ form.pwd1 }}
+            </div>
+            <div class="form-group">
+                <label>再次输入新密码<span style="color: red;margin-left: 30px;">{{ form.pwd2.errors.0 }}</span</label>
+                {{ form.pwd2 }}
+            </div>
+            <input type="submit" class="btn btn-primary submit-btn" value="提交">
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+{#        <script>#}
+{#            $('.submit-btn').click(function () {#}
+{#                $.ajax({#}
+{#                    url:'{% url "backend:personal_update" %}',#}
+{#                    type:'POST',#}
+{#                    data:$('.fm').serialize(),#}
+{#                    dataType:'JSON',#}
+{#                    success:function (arg) {#}
+{#                        console.log(arg);#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        </script>#}
+{% endblock %}

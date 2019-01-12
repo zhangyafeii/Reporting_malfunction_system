@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="{% url 'check_code' %}" method="post">
+    {% csrf_token %}
+    <p><input type="text" name="username"></p>
+    <p><input type="password" name="password"></p>
+    <p><input type="text" name="code">
+        <img src='{% url "get_check_code" %}' onclick="changImg(this);">
+    </p>
+    <p><input type="submit" value="提交"></p>
+</form>
+
+<script>
+function changImg(self) {
+    self.src = self.src+'?';
+}
+</script>
+</body>
+</html>

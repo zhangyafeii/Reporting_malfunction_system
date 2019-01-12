@@ -1,0 +1,14 @@
+{% extends 'backend_loyout.html' %}
+{% block css %}
+    <style>
+    h1{
+        color: #2aabd2;
+        margin-left: 100px;
+    }
+    </style>
+{% endblock %}
+{% block title %}后台管理{% endblock %}
+
+{% block content %}
+    <h1>欢迎登录：{{ request.session.user_info.nickname }} !</h1>
+{% endblock %}

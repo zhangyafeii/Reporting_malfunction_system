@@ -1,0 +1,161 @@
+{% extends 'backend_loyout.html' %}
+
+{% block title %}后台管理-报障管理{% endblock %}
+{% block css %}
+    <style>
+        .article-manage-title {
+            width: 100%;
+            height: 48px;
+            line-height: 48px;
+            list-style: none;
+        }
+
+        .article-manage-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .condition a {
+            display: inline-block;
+            padding: 5px 8px;
+            border: 1px solid #dddddd;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .pager {
+            float: right;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <ul class="article-manage-title">
+        <li style="color: #2aabd2">报障管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>处理障单列表</li>
+    </ul>
+        <div class="clearfix"
+             style="height: 36px;line-height: 35px;padding: 0 15px;border-top: 1px solid #dddddd;background-color: #f1f0f0">
+            <i class="fa fa-table" aria-hidden="true"></i>
+            报障单列表({{ result.count }}单)
+        </div>
+        <div style="padding-left: 20px;">
+            <table id="tb" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="col-md-3">报障标题</th>
+                    <th class="col-md-2">状态</th>
+                    <th class="col-md-2">创建时间</th>
+                    <th class="col-md-2">创建人</th>
+                    <th class="col-md-3">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in result %}
+                    <tr nid="{{ row.id }}">
+                        <td><a href="{% url 'backend:trouble_detail' row.id %}">{{ row.title }}</a></td>
+                        <td>{{ row.get_status_display }}</td>
+                        <td>{{ row.ctime }}</td>
+                        <td>{{ row.user.nickname }}</td>
+                        <td>
+                            {% if row.status == 1 %}
+                                <a href="{% url 'backend:trouble_kill' row.id %}" class="btn btn-success btn-xs">
+                                <i class="fa fa-pencil"></i>
+                                抢单
+                            {% elif row.status == 2 %}
+                                <a href="{% url 'backend:trouble_kill' row.id %}" class="btn btn-success btn-xs">
+                                <i class="fa fa-pencil"></i>
+                                处理订单
+                            {% else %}
+                                <a href="{% url 'backend:trouble_detail' row.id %}" class="btn btn-success btn-xs">
+                                <i class="fa fa-pencil"></i>
+                                解决方案
+                                {% endif %}
+                            </a>
+                            {% if row.status == 2 %}
+                            |
+                            <a nid="{{ row.id }}" id="del-btn" ntitle="{{ row.title }}" class="btn btn-danger btn-xs">
+                                    <i class="fa fa-times"></i> 取消订单
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pager">
+        <ul class="pagination">
+            {{ page_str }}
+        </ul>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除报障单</h4>
+                </div>
+                <div class="modal-body">
+{#                    确认删除分类: <span id="del-class-name" nid=""></span>？#}
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">报障单标题</label>
+                            <input type="text" class="form-control" id="del-class-name" value="" nid="" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm">确认取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindDel();
+            bindDelConfirm();
+        });
+
+        function bindDelConfirm() {
+            $('#del-confirm').click(function () {
+                var id = $('#del-class-name').attr('nid');
+                //console.log(id);
+                $.ajax({
+                    url: '{% url "backend:trouble_kill_del" %}',
+                    type: 'GET',
+                    data: {'id': id},
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        //console.log(arg);
+                        if (arg.status) {
+                            //console.log($(this));
+                            window.location.reload();
+                            //$('#delModal').modal('hide');
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+
+
+        function bindDel() {
+            $('#tb').on('click', '#del-btn', function () {
+                $('#delModal').modal('show');
+                var name = $(this).attr('ntitle');
+                var id = $(this).attr('nid');
+                //console.log(name, id);
+                $('#del-class-name').attr('nid', id);
+                $('#del-class-name').val(name);
+                //$('#del-class-name').text(name);
+            })
+        }
+    </script>
+{% endblock %}

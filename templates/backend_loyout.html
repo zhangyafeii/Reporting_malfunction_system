@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/backend.css">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.7.0/css/font-awesome.min.css">
+    {% block css %}{% endblock %}
+    <style>
+
+    </style>
+    <script src="/static/js/jquery-3.1.1.js"></script>
+    <script>
+        $(function () {
+            $('.avatar').mouseover(function () {
+                $('.userinfo-menu').show();
+            });
+            $('.userinfo-menu').mouseleave(function () {
+                $('.userinfo-menu').hide();
+            });
+            $('.menus .item').click(function () {
+                console.log($(this));
+                $(this).children('.item-content').slideToggle().parent().siblings().children('.item-content').slideUp();
+            })
+        })
+    </script>
+</head>
+<body>
+<div class="pg-header">
+    <div class="logo left">老子的技术论坛</div>
+    <div class="header-left-menu left">
+        <a class="item" href="{% url 'home' blog_site=request.session.user_info.blog__suffix %}">博客首页</a>
+    </div>
+    <div class="header-right-menu right">
+        <a class="item" href="#">消息<i style="margin-left: 3px;" class="fa fa-bell-o" aria-hidden="true"></i><span class="badge" style="background-color: red">4</span></a>
+        <a class="item" href="#">通知<i style="margin-left: 3px;" class="fa fa-envelope-o" aria-hidden="true"></i><span class="badge" style="background-color:forestgreen">4</span></a>
+        <a class="item" href="#">任务<i style="margin-left: 3px;" class="fa fa-commenting-o" aria-hidden="true"></i><span class="badge" style="background-color: forestgreen">4</span></a>
+        <div class="avatar">
+            <a class="item" href="">
+                {% if request.session.user_info.img %}
+                <img src="/{{ request.session.user_info.img }}" alt="用户头像" width="40px" height="40px;">
+                {% else %}
+                <img src="/static/images/default.png" alt="默认头像">
+                {% endif %}
+            </a>
+        </div>
+    </div>
+</div>
+<div class="pg-body">
+    <div class="menus">
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:backend_article' type_id=0 tag_id=0 %}">文章管理</a></div>
+        </div>
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:article_classification' %}">分类管理</a></div>
+        </div>
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:article_tag' %}">标签管理</a></div>
+        </div>
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:trouble-list' %}">报障管理</a></div>
+        </div>
+        {% if '/backend/trouble-kill-list' in request.session.permission_info.permissiontoaction_dict %}
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:trouble_kill_list' %}">报障处理</a></div>
+        </div>
+        {% endif %}
+        {% if '/backend/trouble-temp-list' in request.session.permission_info.permissiontoaction_dict %}
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:trouble_temp_list' %}">模板管理</a></div>
+        </div>
+        {% endif %}
+        {% if '/backend/trouble-report' in request.session.permission_info.permissiontoaction_dict %}
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:trouble_report' %}">数据统计</a></div>
+        </div>
+        {% endif %}
+        <div class="item personal-manage">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i>个人管理</div>
+            <div class="item-content">
+                <div><i class="fa fa-cog"></i><a href="{% url 'backend:personal_view' %}"> 个人资料</a></div>
+                <div><i class="fa fa-cog"></i><a href="{% url 'backend:personal_update_pwd' %}"> 修改密码</a></div>
+            </div>
+        </div>
+        <div class="item blog-manage">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i>博客管理</div>
+            <div class="item-content">
+                <div><i class="fa fa-cog"></i><a href="{% url 'backend:personal_blog' %}"> 个人博客</a></div>
+                <div><i class="fa fa-cog"></i><a href="{% url 'backend:personal_update_blog' %}"> 博客设置</a></div>
+            </div>
+        </div>
+         {% if '/backend/user-list' in request.session.permission_info.permissiontoaction_dict %}
+        <div class="item">
+            <div class="item-title"><i class="fa fa-cogs" aria-hidden="true"></i><a href="{% url 'backend:user_list' %}">用户管理</a></div>
+        </div>
+        {% endif %}
+        {#        {{ menu_string|safe }}#}
+    </div>
+    <div class="contents">{% block content %}{% endblock %}</div>
+</div>
+<div class="userinfo-menu">
+    <a class="item" href="{% url "backend:personal_view" %}">个人信息</a>
+    <a class="item" href="{% url 'logout' %}">退出</a>
+</div>
+
+
+{% block js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,205 @@
+{% extends 'backend_loyout.html' %}
+
+{% block title %}后台管理-文章管理{% endblock %}
+{% block css %}
+    <style>
+        .article-manage-title {
+            width: 100%;
+            height: 48px;
+            line-height: 48px;
+            list-style: none;
+        }
+
+        .article-manage-title li {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .article-manage-search {
+            border: 1px dashed #dddddd;
+            padding: 8px;
+            border-left: 3px solid #337ab7;
+        }
+
+        .condition {
+            padding: 20px 50px;
+        }
+
+        .condition a {
+            display: inline-block;
+            padding: 5px 8px;
+            border: 1px solid #dddddd;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .condition a.active {
+            background-color: coral;
+            color: white;
+        }
+
+        .pager {
+            float: right;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <ul class="article-manage-title">
+        <li style="color: #2aabd2">文章管理</li>
+        <li><i class="fa fa-arrow-right" style="margin-right: 5px;"></i>文章列表</li>
+    </ul>
+    <div class="article-manage-body">
+        <div class="article-manage-search">
+            <i class="fa fa-search" aria-hidden="true"></i> 搜索条件
+            {#            <input class="article-manage-search" type="text" placeholder="搜索条件">#}
+        </div>
+        <div class="condition">
+            <div>
+                <span class="btn btn-default">类型</span>
+                {% if kwargs.type_id == 0 %}
+                    <a href="{% url 'backend:backend_article' type_id=0 tag_id=kwargs.tag_id %}"
+                       class="active">全部</a>
+                {% else %}
+                    <a href="{% url 'backend:backend_article' type_id=0 tag_id=kwargs.tag_id %}">全部</a>
+                {% endif %}
+                {% for item in type_list %}
+                    {% if item.id == kwargs.type_id %}
+                        <a href="{% url 'backend:backend_article' type_id=item.id tag_id=kwargs.tag_id %}"
+                           class="active">{{ item.title }}</a>
+                    {% else %}
+                        <a href="{% url 'backend:backend_article' type_id=item.id tag_id=kwargs.tag_id %}">{{ item.title }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div>
+                <button class="btn btn-default">标签</button>
+                {% if kwargs.tag_id == 0 %}
+                    <a class="active" href="/backend/article-{{ kwargs.type_id }}-0.html">全部</a>
+                {% else %}
+                    <a href="/backend/article-{{ kwargs.type_id }}-0.html">全部</a>
+                {% endif %}
+                {% for item in tag_list %}
+                    {% if item.id == kwargs.tag_id %}
+                        <a class="active"
+                           href="/backend/article-{{ kwargs.type_id }}-{{ item.id }}.html">{{ item.title }}</a>
+                    {% else %}
+                        <a href="/backend/article-{{ kwargs.type_id }}-{{ item.id }}.html">{{ item.title }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="clearfix"
+             style="height: 36px;line-height: 35px;padding: 0 15px;border-top: 1px solid #dddddd;background-color: #f1f0f0">
+            <i class="fa fa-table" aria-hidden="true"></i>
+            搜索文章({{ data_count }}篇)
+            <a target="_blank" href="{% url 'backend:backend_add_article' %}" class="right" style="display: inline-block;padding:0 10px;background-color: #428bca;color: #ffffff;">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                创建新文章
+            </a>
+        </div>
+        <div style="padding-left: 20px;">
+            <table id="tb" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="col-md-5">文章标题</th>
+                    <th class="col-md-3">是否发布</th>
+                    <th class="col-md-4">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in article_list %}
+                    <tr nid="{{ row.id }}">
+                        <td><a id="title" href="{% url 'article_detail' request.session.user_info.blog__suffix row.id %}">{{ row.title }}</a></td>
+                        <td>{{ row.get_publish_display }}</td>
+                        <td>
+                            <a id="del-btn" nid="{{ row.id }}" ntitle="{{ row.title }}" class="btn btn-danger btn-xs">
+                                <i class="fa fa-times"></i>删除
+                            </a>
+                            |
+                            <a class="btn btn-primary btn-xs" href="{% url 'backend:backend_edit_article' row.id %}">
+                                <i class="fa fa-pencil-square-o"></i>编辑
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pager">
+        <ul class="pagination">
+            {{ page_str }}
+        </ul>
+    </div>
+
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">删除文章</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">确认删除？</label>
+                            <input type="text" class="form-control" id="del-class-name" value="" nid="" readonly>
+{#                            <h1 class="form-control" id="del-class-name" nid=""></h1>#}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="del-confirm">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            bindDel();
+            bindDelConfirm();
+        });
+
+        function bindDelConfirm() {
+            $('#del-confirm').click(function () {
+                var id = $('#del-class-name').attr('nid');
+                console.log(id);
+                $.ajax({
+                    url: '{% url "backend:backend_del_article" %}',
+                    type: 'GET',
+                    data: {'id': id},
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        console.log(arg);
+                        if (arg.status) {
+                            console.log($(this));
+                            $('tr[nid="' + id + '"]').remove();
+                            $('#delModal').modal('hide');
+                        }
+                        else {
+                            alert(arg.message);
+                        }
+                    }
+                })
+            })
+        }
+
+
+        function bindDel() {
+            $('#tb').on('click', '#del-btn', function () {
+                $('#delModal').modal('show');
+                var name = $(this).attr('ntitle');
+                var id = $(this).attr('nid');
+                //console.log(name, id);
+                $('#del-class-name').attr('nid', id);
+                $('#del-class-name').val(name);
+                //$('#del-class-name').text(name);
+            })
+        }
+    </script>
+{% endblock %}

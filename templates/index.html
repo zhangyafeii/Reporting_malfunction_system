@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>老子的技术论坛</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="/static/css/index-article.css">
+
+    <script src="/static/js/jquery-3.1.1.js"></script>
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+
+</head>
+<body>
+{% include 'include/header.html' %}
+
+<div class="container" style="margin-bottom: 100px;">
+    <div>
+        <div class="col-md-9">
+            <div class="article_list">
+                {% for item in article_list %}
+                    <div class="article-item">
+                        <h3><a href="{% url 'article_detail' item.blog.suffix item.id %}">{{ item.title }}</a></h3>
+                        <div class="article-item-summary">
+                            <a class="item-a left" href="{% url 'article_detail' item.blog.suffix item.id %}"><img
+                                    src="/{{ item.img }}" alt=""></a>
+                            {{ item.summary }}
+                        </div>
+                        <div class="footers">
+                            <a>
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                <span>{{ item.blog.user.nickname }}</span>
+                            </a>
+                            <span>发布于{{ item.create_time|date:'Y-m-d H:i' }}</span>
+                            <a>
+                                <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                                <span>({{ item.comment.count }})</span>
+                            </a>
+                            <a>
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                <span>({{ item.likes.count }})</span>
+                            </a>
+                            <a>
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                <span>({{ item.read_count }})</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <ul class="pagination">
+                {% if page_obj.num_pages > 1 %}
+                    {{ page_str }}
+                {% else %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="col-md-3" style="border-left: 1px solid gray">
+            <div class="panel panel-default hot-reading">
+                <div class="panel-heading clearfix">
+                    <div class="font">阅读排行榜</div>
+                    <div class="loading_box">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for row in most_read_articles %}
+                            <li>
+                                <a href="{% url 'article_detail' row.blog.suffix row.id %}">{{ forloop.counter }} {{ row.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default hot-recommend">
+                <div class="panel-heading clearfix">
+                    <div class="font">吐血推荐</div>
+                    <div class="loading_box">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for row in most_like_articles %}
+                            <li>
+                                <a href="{% url 'article_detail' row.blog.suffix row.id %}">{{ forloop.counter }} {{ row.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default hot-comment">
+                <div class="panel-heading clearfix">
+                    <div class="font">评论最多</div>
+                    <div class="loading_box">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for row in most_comment_articles %}
+                            <li>
+                                <a href="{% url 'article_detail' row.blog.suffix row.id %}">{{ forloop.counter }} {{ row.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="qq-serice">
+    <a target="_blank" class="a1" href="http://wpa.qq.com/msgrd?v=3&uin=1271570224&site=qq&menu=yes"><img border="0"
+                                                                                                          src="http://wpa.qq.com/pa?p=2:1271570224:53"
+                                                                                                          alt="点击这里给我发消息"
+                                                                                                          title="点击这里给我发消息"/></a>
+    <a target="_blank" class="a2" href="http://wpa.qq.com/msgrd?v=3&uin=1271570224&site=qq&menu=yes"><img border="0"
+                                                                                                          src="http://wpa.qq.com/pa?p=2:1271570224:51"
+                                                                                                          alt="点击这里给我发消息"
+                                                                                                          title="点击这里给我发消息"/></a>
+</div>
+{% include 'include/footer.html' %}
+
+<div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">网站地图</h4>
+            </div>
+            <div class="modal-body" id="map-container"></div>
+            <div class="modal-footer">
+                <button id="return-confirm" type="button" class="btn btn-primary">返回</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&key=RKTBZ-HQOKX-HW34M-TAKPQ-HGXA7-4XF7F"></script>
+<script>
+    $(function () {
+        bindMap();
+        initMap();
+    });
+
+    function initMap() {
+        // 创建地图
+        var map = new qq.maps.Map(document.getElementById("map-container"), {
+            center: new qq.maps.LatLng(35.5004300000, 112.9436600000),      // 地图的中心地理坐标
+            zoom: 12,     // 地图缩放级别
+            mapZoomType: qq.maps.MapZoomType.CENTER,
+            mapStyleId: 'style1',  // 该key绑定的style1对应于经典地图样式，若未绑定将弹出无权限提示窗
+            backgroundColor: "#000000", //用作地图 div 的背景颜色。当用户进行平移时，如果尚未载入图块，则显示此颜色。
+                                        //仅在地图初始化时，才能设置此选项
+        });
+    }
+
+    function bindMap() {
+        $('#map').click(function () {
+            $('#mapModal').modal('show');
+        })
+        $('#return-confirm').click(function () {
+            $('#mapModal').modal('hide');
+        })
+    }
+</script>
+
+</body>
+</html>

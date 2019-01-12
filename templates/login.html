@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.7.0/css/font-awesome.css"
+    <link rel="stylesheet" href="/static/css/index-article.css">
+    <link rel="stylesheet" href="/static/css/account.css">
+    <script src="/static/js/jquery-3.1.1.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="login">
+        <div style="font-size: 25px;font-weight: bold;text-align: center">用户登录</div>
+        <form id="fm" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" class="form-control" placeholder="请输入用户名" name="username">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" class="form-control" placeholder="请输入密码" name="pwd">
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <input type="text" class="form-control" name="check_code">
+                </div>
+                <div class="col-xs-6">
+                    <img src="{% url "get_check_code" %}" onclick="changImg(this);">
+                </div>
+            </div>
+            <div class="form-group" style="font-size: 12px;color: gray;margin-top: 20px;">
+                <label>
+                    <input type="checkbox" name="remember" checked> 一个月之内免登陆
+                </label>
+                <div style="float: right">
+                    <a href="#">忘记密码？</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <a id="submit" class="btn btn-primary">登 陆</a>
+                </div>
+                <div class="col-xs-9" style="padding-left: 0;">
+                    <div style="padding: 6px;" class="alert-danger hide">
+                            <span style="padding: 0 5px 0 5px;display: inline-block;font-size: 14px">
+                                <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                            </span>
+                        <span id="error_msg" style="font-size: 12px;color: red;"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-xs-9">
+                    <span style="color: red">还没有老子技术论坛账号？</span>
+                </div>
+                <div class="col-xs-3">
+                    <a href="{% url 'register' %}">立即注册</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        bindLogin();
+    });
+    function changImg(self) {
+        self.src = self.src + '?';
+    }
+
+    function bindLogin() {
+        $('#submit').click(function () {
+            var $msg = $('#error_msg');
+            $msg.parent().addClass('hide');
+            $.ajax({
+                url: '{% url "login" %}',
+                type: 'POST',
+                data: $('#fm').serialize(),
+                dataType: 'JSON',
+                success: function (arg) {
+                    if (arg.status) {
+                        window.location.href = '/';
+                    }
+                    else {
+                        console.log(arg.errors);
+                        $msg.parent().removeClass('hide');
+                        if (arg.errors.__all__) {
+                            $msg.text(arg.errors.__all__[0]);
+                        }
+                        else if (arg.errors['check_code']){
+                            $msg.text(arg.errors.check_code[0])
+                        }
+                    }
+                }
+            })
+        })
+    }
+</script>
+</body>
+</html>
